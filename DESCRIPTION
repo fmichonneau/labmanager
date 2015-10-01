@@ -1,0 +1,12 @@
+Package: labmanager
+Title: labmanager
+Version: 0.0.999
+Author: Francois Michonneau
+Maintainer: Francois Michonneau <francois.michonneau@gmail.com>
+Description: A Shiny LIMS
+License: MIT + file LICENSE
+LazyData: true
+URL: https://github.com/<gh-username>/labmanager
+BugReports: https://github.com/<gh-username>/labmanager/issues
+Suggests: 
+    testthat
