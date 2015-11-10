@@ -1,4 +1,6 @@
 
+
+
 # labmanager
 
 > labmanager
@@ -10,15 +12,17 @@
 [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/labmanager)](http://www.r-pkg.org/pkg/labmanager)
 
 
-A Shiny LIMS
+A Shiny LIMS. At this stage probably not very useful if you are not me...
 
 ## Installation
+
 
 ```r
 devtools::install_github("fmichonneau/labmanager")
 ```
 
 ## Usage
+
 
 ```r
 library(labmanager)
