@@ -6,7 +6,11 @@ Maintainer: Francois Michonneau <francois.michonneau@gmail.com>
 Description: A Shiny LIMS
 License: MIT + file LICENSE
 LazyData: true
-URL: https://github.com/<gh-username>/labmanager
-BugReports: https://github.com/<gh-username>/labmanager/issues
-Suggests: 
-    testthat
+URL: https://github.com/fmichonneau/labmanager
+BugReports: https://github.com/fmichonneau/labmanager/issues
+Imports:
+    dplyr
+Suggests:
+    testthat,
+    shiny
+RoxygenNote: 5.0.0
