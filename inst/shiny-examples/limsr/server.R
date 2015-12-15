@@ -80,7 +80,6 @@ shinyServer(function(input, output) {
         which_smpl <- smpl[smpl[["voucher_number"]] == input$voucher_id, ]
         which_smpl <- dplyr::left_join(which_smpl, sta, by = "station_number")[, c("latitude_start", "longitude_start")]
         names(which_smpl) <- c("latitude", "longitude")
-        message(which_smpl)
         which_smpl
 
     })
