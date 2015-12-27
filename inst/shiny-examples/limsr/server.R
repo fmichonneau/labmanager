@@ -29,6 +29,22 @@ shinyServer(function(input, output) {
         file.path("~/hdd/plankton-images/archive_photos/", input$voucher_id)
     })
 
+    species_voucher <- reactive({
+        species_info <- function(species) {
+            sp <- strsplit(species, " ")[[1]]
+            list(phylum = sp[[1]],
+                 genus = sp[[3]],
+                 species = sp[[4]])
+        }
+        sp_info <- species_info(input$species)
+        ids <- filter(seq,
+                      seq[["bold_phylum_id"]] == sp_info$phylum,
+                      seq[["bold_genus_id"]] == sp_info$genus,
+                      seq[["bold_species_id"]] == sp_info$species) %>%
+            select(voucher_number)
+    })
+
+
     output$voucher_selected <- renderText({
         paste("Information about", input$voucher_id)
     })
@@ -58,8 +74,8 @@ shinyServer(function(input, output) {
               )
     })
 
-    output$list_img <- renderUI({
-        lst_files <- list.files(path = file.path(img_path(), 'thumbs'), pattern = "JPG$",
+    one_img <- function(img_path) {
+         lst_files <- list.files(path = file.path(img_path, 'thumbs'), pattern = "JPG$",
                                 full.names = TRUE)
         num <- length(lst_files)
         lapply(seq_len(num), function(i) {
@@ -73,7 +89,18 @@ shinyServer(function(input, output) {
                 ))
             }, deleteFile = FALSE)
         })
+    }
+
+    output$list_img <- renderUI({
+        one_img(img_path())
     })
+
+     output$list_img_species <- renderUI({
+         lapply(species_voucher(), function(x) {
+             img_pth <- file.path("~/hdd/plankton-images/archive_photos/", x)
+             one_img(img_pth)
+         })
+     })
 
     ## Map
     points <- reactive({
