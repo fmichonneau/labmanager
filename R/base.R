@@ -162,8 +162,8 @@ Submitted on: {{submitted_on}}
 {{{table}}}
 
 "
-    seq_plate <- get_lab("sequence_plate_data")
-    seq_id <- get_lab("sequence_plate_id")
+    seq_plate <- get_lab("sequencing_plate_data")
+    seq_id <- get_lab("sequencing_plate_id")
 
     map_data <- list(
         plate_id = plate_id,
