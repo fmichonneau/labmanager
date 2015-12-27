@@ -63,9 +63,9 @@ build_plate_map <- function(plate_id) {
     sample_plate <- seq_plate[seq_plate[["sequencing_plate_id"]] ==  plate_id,
                        c("pcr_id", "voucher_number", "plate_column", "plate_row")]
 
-    primer_plate <- dplyr::left_join(sample_plate[, c("pcr_id", "plate_column", "plate_row")],
-                                     pcr[, c("pcr_id", "pcr_primer_forward", "pcr_primer_reverse")],
-                                     by = "pcr_id")
+   # primer_plate <- dplyr::left_join(sample_plate[, c("pcr_id", "plate_column", "plate_row")],
+   #                                  pcr[, c("pcr_id", "pcr_primer_forward", "pcr_primer_reverse")],
+   #                                  by = "pcr_id")
 
     plate_map <- tidyr::spread_(sample_plate[, -match("pcr_id", names(sample_plate))],
                                 "plate_column", "voucher_number")
