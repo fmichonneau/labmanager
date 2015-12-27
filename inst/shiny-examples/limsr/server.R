@@ -75,7 +75,7 @@ shinyServer(function(input, output) {
     })
 
     one_img <- function(img_path) {
-         lst_files <- list.files(path = file.path(img_path, 'thumbs'), pattern = "JPG$",
+        lst_files <- list.files(path = file.path(img_path, 'thumbs'), pattern = "JPG$",
                                 full.names = TRUE)
         num <- length(lst_files)
         lapply(seq_len(num), function(i) {
@@ -114,5 +114,17 @@ shinyServer(function(input, output) {
         leaflet() %>%
             addTiles() %>%
             addMarkers(data = points())
+    })
+    species_points <- reactive({
+        vchr <- species_voucher()
+        filter(smpl, voucher_number %in%  vchr) %>%
+            left_join(sta, by = "station_number") %>%
+            select(latitude = latitude_start,
+                   longitude = longitude_start)
+    })
+    output$species_station_map <- renderLeaflet({
+        leaflet() %>%
+            addTiles() %>%
+            addMarkers(data = species_points())
     })
 })

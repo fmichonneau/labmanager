@@ -1,12 +1,13 @@
 library(shiny)
 library(leaflet)
+library(dplyr)
 library(labmanager)
 
 voucher <- get_lab("sample_data")
 with_img <-  voucher[["voucher_number"]][as.logical(voucher[["has_photo"]])]
 
 sequencing_data <- get_lab("sequencing_plate_data") %>%
-    filter(!is.na(bold_phylum_id)) %>%
+    filter(!is.na(.$"bold_phylum_id")) %>%
     filter(bold_phylum_id != "")
 lst_bold_species <- paste(sequencing_data[["bold_phylum_id"]], "--",
                           sequencing_data[["bold_genus_id"]],
@@ -19,8 +20,8 @@ shinyUI(
                tabPanel("by voucher",
                         sidebarLayout(
                             sidebarPanel("Specimen information",
-                                         selectizeInput('voucher_id', "Voucher ID",
-                                                        choices = with_img),
+                                         selectInput('voucher_id', "Voucher ID",
+                                                     choices = with_img),
                                          leafletOutput("station_map")
                                          ),
                             mainPanel(
@@ -35,8 +36,10 @@ shinyUI(
                tabPanel("By species",
                         sidebarLayout(
                             sidebarPanel("Choose the species",
-                                         selectizeInput('species', "Species",
-                                                        choices = lst_bold_species)
+                                         selectInput('species', "Species",
+                                                        choices = lst_bold_species,
+                                                        selected = TRUE),
+                                         leafletOutput("species_station_map")
                                          ),
                             uiOutput("list_img_species")
                         )
