@@ -17,7 +17,7 @@ lst_bold_species <- paste(sequencing_data[["bold_phylum_id"]], "--",
 
 shinyUI(
     navbarPage("Florida plankton",
-               tabPanel("by voucher",
+               tabPanel("By voucher",
                         sidebarLayout(
                             sidebarPanel("Specimen information",
                                          selectInput('voucher_id', "Voucher ID",
@@ -37,11 +37,14 @@ shinyUI(
                         sidebarLayout(
                             sidebarPanel("Choose the species",
                                          selectInput('species', "Species",
-                                                        choices = lst_bold_species,
-                                                        selected = TRUE),
+                                                     choices = lst_bold_species,
+                                                     selected = TRUE),
                                          leafletOutput("species_station_map")
                                          ),
-                            uiOutput("list_img_species")
+                            mainPanel(
+                                textOutput("voucher_list"),
+                                fluidRow(column(width = 2, uiOutput("list_img_species", style = "height: 255px;")))
+                            )
                         )
                         )
                )
