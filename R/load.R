@@ -58,7 +58,9 @@ get_lab <- function(what, path = "~/Documents/plankton-larvae-data") {
         stop(sQuote("what"), " needs to be specified")
     else {
         what <- match.arg(what, lab_data_files(path))
-        load_lab_data()[[what]]
+        res <- load_lab_data()[[what]]
+        validate(what, res)
+        res
     }
 }
 
