@@ -74,9 +74,10 @@ shinyServer(function(input, output) {
               )
     })
 
-    assemble_img <- function(lst_files, page) {
+    assemble_img <- function(lst_files, voucher) {
+        message(voucher)
         lapply(seq_along(lst_files), function(i) {
-            output[[paste0(page, i)]] <- renderImage({
+            output[[paste0(voucher, i)]] <- renderImage({
                 return(list(
                     src = lst_files[i],
                     filetype = "image/jpeg",
@@ -87,10 +88,10 @@ shinyServer(function(input, output) {
         })
     }
 
-    render_img <- function(lst_files, page) {
+    render_img <- function(lst_files, voucher) {
         if (length(lst_files) > 0) {
-            res <- lapply(seq_along(assemble_img(lst_files, page)), function(i) {
-                imageOutput(paste0(page, i), height = "255px")
+            res <- lapply(seq_along(assemble_img(lst_files, voucher)), function(i) {
+                imageOutput(paste0(voucher, i), height = "255px")
             })
         } else {
             res <- textOutput("No photo...")
@@ -100,7 +101,7 @@ shinyServer(function(input, output) {
     output[["list_img"]] <- renderUI({
         lst_files <- list.files(path = file.path(img_path(), 'thumbs'),
                                 pattern = "JPG$", full.names = TRUE)
-        render_img(lst_files, "by_voucher")
+        render_img(lst_files, basename(img_path()))
     })
 
     output[["list_img_species"]] <- renderUI({
@@ -108,18 +109,12 @@ shinyServer(function(input, output) {
         lst_files <- lapply(vchr, function(vchr_) {
             img_pth <- file.path("~/hdd/plankton-images/archive_photos", vchr_)
             img_pth <- img_pth[file.exists(img_pth)]
-            message(img_pth)
             if (length(img_pth) > 0)
                 list.files(path = file.path(img_pth, 'thumbs'),
                            pattern = "JPG$", full.names = TRUE)
             else character(0)
         })
-        lst_files <- unlist(lst_files)
-        print(lst_files)
-        ## if (length(lst_files) == 0)
-        ##     renderText({"No photos."})
-        ## else
-            render_img(lst_files, "by_species")
+        render_img(lst_files, paste0(vchr, collapse = ""))
     })
 
     output$voucher_list <- renderText({
