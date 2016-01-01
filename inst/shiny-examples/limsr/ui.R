@@ -13,7 +13,8 @@ lst_bold_species <- paste(sequencing_data[["bold_phylum_id"]], "--",
                           sequencing_data[["bold_genus_id"]],
                           sequencing_data[["bold_species_id"]],
                           paste0("(", sequencing_data[["bold_bin_id"]], ")")) %>%
-    sort
+    sort %>%
+    .[nzchar(.)]
 
 shinyUI(
     navbarPage("Florida plankton",
