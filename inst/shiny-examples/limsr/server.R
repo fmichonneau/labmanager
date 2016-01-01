@@ -77,7 +77,6 @@ shinyServer(function(input, output) {
     })
 
     assemble_img <- function(lst_files, voucher) {
-        message(voucher)
         lapply(seq_along(lst_files), function(i) {
             output[[paste0(voucher, i)]] <- renderImage({
                 return(list(
@@ -148,8 +147,14 @@ shinyServer(function(input, output) {
     }
 
     output$species_station_map <- renderLeaflet({
+        sp_pts <- species_points(species_voucher(input$species))
         leaflet() %>%
             addTiles() %>%
-            addMarkers(data = species_points())
+            addMarkers(data = sp_pts)
     })
+
+    observe({
+        leafletProxy("species_station_map", data = species_points(species_voucher(input$species)))
+    })
+
 })
