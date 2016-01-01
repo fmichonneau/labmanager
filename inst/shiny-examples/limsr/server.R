@@ -42,8 +42,9 @@ shinyServer(function(input, output) {
                       seq[["bold_phylum_id"]] == sp_info$phylum,
                       seq[["bold_genus_id"]] == sp_info$genus,
                       seq[["bold_species_id"]] == sp_info$species) %>%
-            select(voucher_number)
-    })
+            select(voucher_number) %>%
+            .[[1]]
+    }
 
 
     output$voucher_selected <- renderText({
