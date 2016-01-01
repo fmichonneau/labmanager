@@ -29,14 +29,15 @@ shinyServer(function(input, output) {
         file.path("~/hdd/plankton-images/archive_photos/", input$voucher_id)
     })
 
-    species_voucher <- reactive({
-        species_info <- function(species) {
-            sp <- strsplit(species, " ")[[1]]
-            list(phylum = sp[[1]],
-                 genus = sp[[3]],
-                 species = sp[[4]])
-        }
-        sp_info <- species_info(input$species)
+    species_info <- function(species) {
+        sp <- strsplit(species, " ")[[1]]
+        list(phylum = sp[[1]],
+             genus = sp[[3]],
+             species = sp[[4]])
+    }
+
+    species_voucher <- function(input_species) {
+        sp_info <- species_info(input_species)
         ids <- filter(seq,
                       seq[["bold_phylum_id"]] == sp_info$phylum,
                       seq[["bold_genus_id"]] == sp_info$genus,
@@ -114,12 +115,12 @@ shinyServer(function(input, output) {
                            pattern = "JPG$", full.names = TRUE)
             else character(0)
         })
+        lst_files <- unlist(lst_files)
         render_img(lst_files, paste0(vchr, collapse = ""))
     })
 
     output$voucher_list <- renderText({
-        vchr <- species_voucher()
-        paste("Voucher:", paste(vchr, collapse = ", "))
+       paste("Voucher:", paste0(species_voucher(input$species), collapse = ", "))
     })
 
     ## Map
@@ -130,18 +131,21 @@ shinyServer(function(input, output) {
         which_smpl
 
     })
+
     output$station_map <- renderLeaflet({
         leaflet() %>%
             addTiles() %>%
             addMarkers(data = points())
     })
-    species_points <- reactive({
-        vchr <- species_voucher()
-        filter(smpl, voucher_number %in%  vchr) %>%
+
+    species_points <- function(vchr) {
+        filter(smpl, voucher_number %in% vchr) %>%
             left_join(sta, by = "station_number") %>%
             select(latitude = latitude_start,
-                   longitude = longitude_start)
-    })
+                   longitude = longitude_start) %>%
+            distinct
+    }
+
     output$species_station_map <- renderLeaflet({
         leaflet() %>%
             addTiles() %>%
