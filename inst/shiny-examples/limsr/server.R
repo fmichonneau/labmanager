@@ -46,6 +46,14 @@ shinyServer(function(input, output) {
             .[[1]]
     }
 
+    list_files_voucher <- function(vchr) {
+        img_pth <- file.path("~/hdd/plankton-images/archive_photos", vchr)
+        img_pth <- img_pth[file.exists(img_pth)]
+        if (length(img_pth) > 0)
+            list.files(path = file.path(img_pth, 'thumbs'),
+                       pattern = "JPG$", full.names = TRUE)
+        else character(0)
+    }
 
     output$voucher_selected <- renderText({
         paste("Information about", input$voucher_id)
@@ -106,15 +114,8 @@ shinyServer(function(input, output) {
     })
 
     output[["list_img_species"]] <- renderUI({
-        vchr <- species_voucher()
-        lst_files <- lapply(vchr, function(vchr_) {
-            img_pth <- file.path("~/hdd/plankton-images/archive_photos", vchr_)
-            img_pth <- img_pth[file.exists(img_pth)]
-            if (length(img_pth) > 0)
-                list.files(path = file.path(img_pth, 'thumbs'),
-                           pattern = "JPG$", full.names = TRUE)
-            else character(0)
-        })
+        vchr <- species_voucher(input$species)
+        lst_files <- lapply(vchr, list_files_voucher)
         lst_files <- unlist(lst_files)
         render_img(lst_files, paste0(vchr, collapse = ""))
     })
