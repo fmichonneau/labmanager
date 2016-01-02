@@ -121,7 +121,10 @@ shinyServer(function(input, output) {
     })
 
     output$voucher_list <- renderText({
-       paste("Voucher:", paste0(species_voucher(input$species), collapse = ", "))
+        vchr <- species_voucher(input$species)
+        n_photos <- vapply(vchr, function(x) length(list_files_voucher(x)),
+                           numeric(1))
+        paste("Voucher:", paste0(vchr, " (", n_photos, ")", collapse = ", "))
     })
 
     ## Map
