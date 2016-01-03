@@ -26,7 +26,7 @@ shinyServer(function(input, output) {
     sta <- get_lab("station_data")
 
     img_path <- reactive({
-        file.path("~/hdd/plankton-images/archive_photos/", input$voucher_id)
+        file.path("~/hdd/plankton-images/app_photos/", input$voucher_id)
     })
 
     species_info <- function(species) {
@@ -47,7 +47,7 @@ shinyServer(function(input, output) {
     }
 
     list_files_voucher <- function(vchr) {
-        img_pth <- file.path("~/hdd/plankton-images/archive_photos", vchr)
+        img_pth <- file.path("~/hdd/plankton-images/app_photos", vchr)
         img_pth <- img_pth[file.exists(img_pth)]
         if (length(img_pth) > 0)
             list.files(path = file.path(img_pth, 'thumbs'),

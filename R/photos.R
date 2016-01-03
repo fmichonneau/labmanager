@@ -23,38 +23,63 @@ uppercase_photo_extension <- function(photo_folder = "/home/francois/hdd/plankto
 }
 
 ##' @export
-generate_thumbnails <- function(photo_folder = "/home/francois/hdd/plankton-images/archive_photos",
-                                regenerate = FALSE) {
+generate_thumbnails <- function(archive_folder = "/home/francois/hdd/plankton-images/archive_photos",
+                                app_folder = "/home/francois/hdd/plankton-images/app_photos",
+                                voucher_pattern = "FLPK-[0-9]{4}", regenerate = FALSE) {
 
-    ## Get all the directories
-    photo_dirs <- list.files(pattern = "^FLPK-", path = photo_folder, full.names = TRUE)
-    photo_dirs <- photo_dirs[file.info(photo_dirs)$isdir]
+    ## Get all the directories in the archives
+    archive_dirs <- list.files(pattern = voucher_pattern,
+                               path = archive_folder,
+                               full.names = TRUE)
+    archive_dirs <- archive_dirs[file.info(archive_dirs)$isdir]
 
-    vouchers <- gsub(".+/(FLPK-[0-9]{4})", "\\1", photo_dirs)
+    ## Get all the directories in the app folder
+    app_dirs <- list.files(pattern = voucher_pattern,
+                           path = app_folder,
+                           full.names = TRUE)
+    app_dirs <- app_dirs[file.info(app_dirs)$isdir]
+
+    ## Folders to recreate
+    if (regenerate) {
+        ## if regenerate, all folders get recreated
+        voucher_to_create <- archive_dirs
+    } else {
+        ## otherwise, only the ones that don't already exist
+        voucher_to_create <- setdiff(basename(archive_dirs), basename(app_dirs))
+    }
+    path_to_create <- file.path(app_folder, voucher_to_create)
 
     ## Call ImageMagick
-    for (i in seq_along(photo_dirs)) {
-        thumb_path <- file.path(photo_dirs[i], "thumbs")
-        if (!regenerate && file.exists(thumb_path)) {
-            if (identical(length(list.files(path = photo_dirs[i], pattern = "JPG")),
-                          length(list.files(path = file.path(photo_dirs[i], "thumbs"), pattern = "JPG")))) {
-                message(sQuote(thumb_path), " already exists. Skipping.")
-                next
-            } else {
-                stop("Something is wrong with the thumbnails for ", vouchers[i])
-            }
-        } else {
-            dir.create(thumb_path)
-            message("Generating thumbnails for ", vouchers[i])
-            system(paste("cd", photo_dirs[i], ";",
-                         "mogrify -path thumbs -define jgeg:size=800x600 -auto-orient -thumbnail '300x200>' -unsharp 0x.5 '*.JPG'
-                      "))
-            if (!identical(length(list.files(path = photo_dirs[i], pattern = "JPG")),
-                           length(list.files(path = file.path(photo_dirs[i], "thumbs"), pattern = "JPG")))) {
-                stop("something went wrong for ", vouchers[i])
-            } else {
-                message("Done for ", vouchers[i])
-            }
-        }
+    for (i in seq_along(voucher_to_create)) {
+        large_path <- file.path(path_to_create[i], "large")
+        thumb_path <- file.path(path_to_create[i], "thumbs")
+        orig_path <- file.path(archive_folder, voucher_to_create[i])
+        if (!file.exists(orig_path)) stop(sQuote(orig_path), " doesn't exist.")
+
+        ## thumbnails
+        message("Generating thumbnails for ", voucher_to_create[i], " ... ", appendLF = FALSE)
+        dir.create(thumb_path, recursive = TRUE)
+        system(paste("cd", orig_path, ";",
+                     "mogrify -path", thumb_path,
+                     "-define jgeg:size=800x600 -auto-orient -thumbnail '300x200>' -unsharp 0x.5 '*.JPG'")
+               )
+        check_photo_creation(orig_path, thumb_path)
+
+        ## large
+        message("Generating large thumbnail for ", voucher_to_create[i], "...", appendLF = FALSE)
+        dir.create(large_path, recursive = TRUE)
+        system(paste("cd ", orig_path, ";",
+                     "mogrify -path", large_path,
+                     "-resize '1600x1200>' '*.JPG'"))
+        check_photo_creation(orig_path, large_path)
+    }
+}
+
+check_photo_creation <- function(original_path, target_path) {
+    if (!identical(basename(list.files(path = original_path, pattern = "JPG$")),
+                   basename(list.files(path = target_path, pattern = "JPG$")))) {
+        stop("something went wrong...")
+    } else {
+        message("DONE.")
     }
 }
