@@ -25,7 +25,7 @@ uppercase_photo_extension <- function(photo_folder = "/home/francois/hdd/plankto
 ##' @export
 generate_thumbnails <- function(archive_folder = "/home/francois/hdd/plankton-images/archive_photos",
                                 app_folder = "/home/francois/hdd/plankton-images/app_photos",
-                                voucher_pattern = "FLPK-[0-9]{4}", regenerate = FALSE) {
+                                voucher_pattern = "FLPK-[0-9]{4}") {
 
     ## Get all the directories in the archives
     archive_dirs <- list.files(pattern = voucher_pattern,
@@ -40,13 +40,7 @@ generate_thumbnails <- function(archive_folder = "/home/francois/hdd/plankton-im
     app_dirs <- app_dirs[file.info(app_dirs)$isdir]
 
     ## Folders to recreate
-    if (regenerate) {
-        ## if regenerate, all folders get recreated
-        voucher_to_create <- archive_dirs
-    } else {
-        ## otherwise, only the ones that don't already exist
-        voucher_to_create <- setdiff(basename(archive_dirs), basename(app_dirs))
-    }
+    voucher_to_create <- setdiff(basename(archive_dirs), basename(app_dirs))
     path_to_create <- file.path(app_folder, voucher_to_create)
 
     ## Call ImageMagick
@@ -57,7 +51,7 @@ generate_thumbnails <- function(archive_folder = "/home/francois/hdd/plankton-im
         if (!file.exists(orig_path)) stop(sQuote(orig_path), " doesn't exist.")
 
         ## thumbnails
-        message("Generating thumbnails for ", voucher_to_create[i], " ... ", appendLF = FALSE)
+        message("Generating thumbnails for ", voucher_to_create[i], "...", appendLF = FALSE)
         dir.create(thumb_path, recursive = TRUE)
         system(paste("cd", orig_path, ";",
                      "mogrify -path", thumb_path,
