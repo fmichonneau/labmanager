@@ -99,7 +99,7 @@ shinyServer(function(input, output) {
 
     render_img <- function(lst_files, voucher) {
         lapply(seq_along(assemble_img(lst_files, voucher)), function(i) {
-            imageOutput(paste0(voucher, i), height = "255px")
+            imageOutput(paste0(voucher, i), height = "255px", inline = TRUE)
         })
     }
 
