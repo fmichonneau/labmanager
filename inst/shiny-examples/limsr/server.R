@@ -98,13 +98,9 @@ shinyServer(function(input, output) {
     }
 
     render_img <- function(lst_files, voucher) {
-        if (length(lst_files) > 0) {
-            res <- lapply(seq_along(assemble_img(lst_files, voucher)), function(i) {
-                imageOutput(paste0(voucher, i), height = "255px")
-            })
-        } else {
-            res <- textOutput("No photo...")
-        }
+        lapply(seq_along(assemble_img(lst_files, voucher)), function(i) {
+            imageOutput(paste0(voucher, i), height = "255px")
+        })
     }
 
     output[["list_img"]] <- renderUI({
