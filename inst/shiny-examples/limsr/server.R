@@ -4,7 +4,7 @@ library(labmanager)
 library(dplyr)
 
 ## Generate the exif information
-## info <- system('exiftool -T -r -FileName -Directory -ImageSize "/home/francois/hdd/plankton-images/archive_photos/"',
+## info <- system('exiftool -T -r -FileName -Directory -ImageSize "/home/francois/plankton-images/archive_photos/"',
 ##                inter=TRUE)
 ## saveRDS(info, file = "inst/shiny-examples/limsr/photo_info.rds")
 ## img_df <- read.delim2(textConnection(info),
@@ -17,17 +17,30 @@ library(dplyr)
 ##            image_height = unlist(strsplit(image_size, "x"))[2]) %>%
 ##     mutate(full_path = file.path(file_path, file_name))
 ## saveRDS(img_df, file = "inst/shiny-examples/limsr/img_df.rds")
-img_df <- readRDS("img_df.rds")
+##img_df <- readRDS("img_df.rds")
 
 
 shinyServer(function(input, output) {
     smpl <- get_lab("sample_data")
     seq <- get_lab("sequencing_plate_data")
     sta <- get_lab("station_data")
+    photo_path <- file.path("www", "app_photos")
 
-    img_path <- reactive({
-        file.path("~/hdd/plankton-images/app_photos/", input$voucher_id)
+    get_voucher_path <- function(voucher) {
+        file.path(photo_path, voucher)
+    }
+
+    voucher_path <- reactive({
+        get_voucher_path(input$voucher_id)
     })
+
+    large_thumb_path <- function(voucher_path) {
+        file.path(voucher_path, "large")
+    }
+
+    thumb_path <- function(voucher_path) {
+        file.path(voucher_path, "thumbs")
+    }
 
     species_info <- function(species) {
         sp <- strsplit(species, " ")[[1]]
@@ -46,11 +59,13 @@ shinyServer(function(input, output) {
             .[[1]]
     }
 
-    list_files_voucher <- function(vchr) {
-        img_pth <- file.path("~/hdd/plankton-images/app_photos", vchr)
-        img_pth <- img_pth[file.exists(img_pth)]
-        if (length(img_pth) > 0)
-            list.files(path = file.path(img_pth, 'thumbs'),
+    list_thumbs_voucher <- function(vchr) {
+        vchr_pth <- get_voucher_path(vchr)
+        message("vouhcer path: ", vchr_pth)
+        vchr_pth <- vchr_pth[file.exists(vchr_pth)]
+        message(vchr_pth)
+        if (length(vchr_pth) > 0)
+            list.files(path = thumb_path(vchr_pth),
                        pattern = "JPG$", full.names = TRUE)
         else character(0)
     }
@@ -80,7 +95,7 @@ shinyServer(function(input, output) {
 
     output$number_images <- renderText({
         paste("Number of images for specimen",
-              length(list.files(path = img_path(), pattern = "JPG$"))
+              length(list.files(path = thumb_path(voucher_path()), pattern = "JPG$"))
               )
     })
 
@@ -99,26 +114,32 @@ shinyServer(function(input, output) {
 
     render_img <- function(lst_files, voucher) {
         lapply(seq_along(assemble_img(lst_files, voucher)), function(i) {
-            imageOutput(paste0(voucher, i), height = "255px", inline = TRUE)
+            img_links <- gsub("thumbs/", "large/", lst_files)
+            img_links <- gsub("www/", "", img_links)
+            a(href = img_links,
+              `data-lightbox` = paste0(voucher, i),
+              imageOutput(paste0(voucher, i), height = "255px", inline = TRUE)
+              )
         })
     }
 
     output[["list_img"]] <- renderUI({
-        lst_files <- list.files(path = file.path(img_path(), 'thumbs'),
+        lst_files <- list.files(path = file.path(voucher_path(), 'thumbs'),
                                 pattern = "JPG$", full.names = TRUE)
-        render_img(lst_files, basename(img_path()))
+        render_img(lst_files, basename(voucher_path()))
     })
 
     output[["list_img_species"]] <- renderUI({
         vchr <- species_voucher(input$species)
-        lst_files <- lapply(vchr, list_files_voucher)
+        lst_files <- lapply(vchr, list_thumbs_voucher)
         lst_files <- unlist(lst_files)
+        message(lst_files)
         render_img(lst_files, paste0(vchr, collapse = ""))
     })
 
     output$voucher_list <- renderText({
         vchr <- species_voucher(input$species)
-        n_photos <- vapply(vchr, function(x) length(list_files_voucher(x)),
+        n_photos <- vapply(vchr, function(x) length(list_thumbs_voucher(x)),
                            numeric(1))
         paste("Voucher:", paste0(vchr, " (", n_photos, ")", collapse = ", "))
     })
