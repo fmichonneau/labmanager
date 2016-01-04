@@ -12,7 +12,7 @@ before_install:
 install:
   - ./pkg-build.sh install_deps
 
-r_github_packages:
+github_packages:
   - fmichonneau/chopper
 
 script:
