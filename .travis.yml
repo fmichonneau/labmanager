@@ -12,6 +12,9 @@ before_install:
 install:
   - ./pkg-build.sh install_deps
 
+r_github_packages:
+  - fmichonneau/chopper
+
 script:
   - ./pkg-build.sh run_tests
 
@@ -28,4 +31,3 @@ env:
     - RVERSION=oldrel
     - RVERSION=release
     - RVERSION=devel
-
