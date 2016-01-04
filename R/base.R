@@ -15,6 +15,7 @@
 
 ##
 
+##' @importFrom dplyr left_join
 validate_sequencing_plate <- function(plate_id) {
 
     seq_plate <- get_lab("sequencing_plate_data")
@@ -55,6 +56,7 @@ validate_sequencing_plate <- function(plate_id) {
                       collapse = ", "))
 }
 
+##' @importFrom tidyr spread_
 build_plate_map <- function(plate_id) {
 
     seq_plate <- get_lab("sequencing_plate_data")
@@ -87,7 +89,7 @@ failed_pcr <- function(pcr_samples = get_lab("pcr_sample_data"),
 
     n_attempts <- failed_pcr %>%
         dplyr::group_by_("voucher_number") %>%
-        dplyr::tally(.) %>%
+        dplyr::tally() %>%
         dplyr::rename_("number_pcr_attempts" = "n")
 
     tmp_res <- dplyr::left_join(n_attempts,
@@ -142,7 +144,9 @@ successful_pcr_not_yet_plated <- function(pcr_samples = get_lab("pcr_sample_data
 
 }
 
-
+##' @importFrom knitr kable
+##' @importFrom rmarkdown render
+##' @importFrom whisker whisker.render
 render_plate_map <- function(plate_id, outfile = "/tmp/test.pdf") {
 
     plate_map_template <- "

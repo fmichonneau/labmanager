@@ -1,6 +1,5 @@
-##' .. content for \description{} (no empty lines) ..
+##' Run the shiny app to explore plankton from Florida
 ##'
-##' .. content for \details{} ..
 ##' @title Run limsr
 ##' @return Start the shiny app
 ##' @author Francois Michonneau

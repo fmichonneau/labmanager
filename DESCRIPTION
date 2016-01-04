@@ -1,5 +1,5 @@
 Package: labmanager
-Title: labmanager
+Title: Manage barcoding data and more
 Version: 0.0.999
 Author: Francois Michonneau
 Maintainer: Francois Michonneau <francois.michonneau@gmail.com>
@@ -9,8 +9,16 @@ LazyData: true
 URL: https://github.com/fmichonneau/labmanager
 BugReports: https://github.com/fmichonneau/labmanager/issues
 Imports:
-    dplyr
+    dplyr (>= 0.4.3),
+    magrittr (>= 1.5),
+    shiny (>= 0.12.2),
+    knitr,
+    rmarkdown,
+    chopper,
+    tidyr,
+    whisker,
+    ape,
+    assertthat
 Suggests:
-    testthat,
-    shiny
+    testthat (>= 0.11.0)
 RoxygenNote: 5.0.1

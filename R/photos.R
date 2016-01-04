@@ -1,3 +1,7 @@
+##' Creates the folder to store the photo in the archives
+##'
+##' @param photo_folder path where the photos are stored.
+##' @param sample_data the data frame with the sample information
 ##' @export
 generate_folder_structure <- function(photo_folder = "/home/francois/hdd/plankton-images/archive_photos",
                                       sample_data = get_lab("sample_data")) {
@@ -14,6 +18,9 @@ generate_folder_structure <- function(photo_folder = "/home/francois/hdd/plankto
            function(x) dir.create(file.path(photo_folder, x)))
 }
 
+##' Check that the photo files have uppercase JPG extension
+##'
+##' @param photo_folder path where the original photos are stored
 ##' @export
 uppercase_photo_extension <- function(photo_folder = "/home/francois/hdd/plankton-images/archive_photos/") {
     lst_files <- list.files(pattern = "jpg$", path = photo_folder, recursive = TRUE, full.names = TRUE)
@@ -22,6 +29,11 @@ uppercase_photo_extension <- function(photo_folder = "/home/francois/hdd/plankto
     all(apply(nm, 1, function(x) file.rename(x[1], x[2])))
 }
 
+##' Creates the copies of the photos to be used by the shiny app
+##'
+##' @param archive_folder folder where the original photos are stored
+##' @param app_folder folder where the smaller versions are stored
+##' @param voucher_pattern regular expression that match the voucher
 ##' @export
 generate_thumbnails <- function(archive_folder = "/home/francois/hdd/plankton-images/archive_photos",
                                 app_folder = "/home/francois/hdd/plankton-images/app_photos",

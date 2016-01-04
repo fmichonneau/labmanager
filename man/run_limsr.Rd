@@ -10,10 +10,7 @@ run_limsr()
 Start the shiny app
 }
 \description{
-.. content for \description{} (no empty lines) ..
-}
-\details{
-.. content for \details{} ..
+Run the shiny app to explore plankton from Florida
 }
 \author{
 Francois Michonneau

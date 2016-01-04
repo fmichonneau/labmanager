@@ -1,3 +1,4 @@
+##' @importFrom chopper mergeAlignment
 align_by_phyla <- function(seq_path = "~/Documents/plankton-larvae-data/seqs/COI",
                            out_path = "/tmp",
                            sample_data = get_lab("sample_data"),
@@ -32,6 +33,8 @@ align_by_phyla <- function(seq_path = "~/Documents/plankton-larvae-data/seqs/COI
         )
 }
 
+##' @importFrom assertthat assert_that
+##' @importFrom chopper removeFastaComments splitAlignment
 import_sequence_to_repository <- function(file,
                                           seq_path = "~/Documents/plankton-larvae-data/seqs/COI",
                                           ...) {
