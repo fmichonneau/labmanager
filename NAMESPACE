@@ -2,6 +2,7 @@
 
 export(generate_folder_structure)
 export(generate_thumbnails)
+export(get_lab)
 export(run_limsr)
 export(uppercase_photo_extension)
 importFrom(ape,read.dna)
