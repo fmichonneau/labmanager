@@ -2,3 +2,4 @@
 .Rhistory
 .RData
 inst/shiny-examples/limsr/www/app_photos/
+/.httr-oauth
