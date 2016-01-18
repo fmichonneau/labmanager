@@ -34,6 +34,13 @@ copy_photos <- function(from = "~/hdd/plankton-images/app_photos",
         res <- res[1:50, ]
     }
 
+    sapply(to_data, function(x) {
+        x <- dirname(x)
+        if (!dir.exists(x)) {
+            dir.create(x, recursive = TRUE)
+        }
+    })
+
     apply(res, 1, function(x) file.copy(x[1], x[2], overwrite = TRUE,
                                         copy.date = TRUE))
 }
@@ -42,11 +49,11 @@ copy_photos <- function(from = "~/hdd/plankton-images/app_photos",
 ## @param testing if \code{TRUE}, only a subset of the images are
 ##     copied to the app to speed up process
 deploy_app <- function(d, app_path = "~/R-dev/flpk-shiny",
-                       testing = FALSE) {
+                       testing = FALSE, ...) {
 
     ## before deploying we need to copy the photo and the data to www
     copy_data()
-    copy_photos()
+    copy_photos(testing = testing)
     analogsea::docklet_shinyapp(droplet = d, path = app_path,
                                 img = "fmichonneau/flpk-docker-image",
                                 ...)
