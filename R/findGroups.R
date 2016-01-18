@@ -7,10 +7,14 @@ distFromTip <- function(tr, node, trPost, parallel=TRUE, cores=8) {
     allDesc <- descendants(tr, node, type="all")
     lDesc <- allDesc[allDesc < nTips(tr)]
     if (parallel) {
-        tmpD <- mclapply(lDesc, function(x) {
-            pth <- intersect(allDesc, ancestors(trPost, x, type="ALL"))
-            sumEdgeLength(tr, pth)
-        }, mc.cores=cores)
+        if (require(foreach) && require(parallel)) {
+            tmpD <- mclapply(lDesc, function(x) {
+                pth <- intersect(allDesc, ancestors(trPost, x, type="ALL"))
+                sumEdgeLength(tr, pth)
+            }, mc.cores=cores)
+        } else {
+            stop("need to install package foreach")
+        }
     }
     else {
         tmpD <- lapply(lDesc, function(x) {
@@ -21,11 +25,12 @@ distFromTip <- function(tr, node, trPost, parallel=TRUE, cores=8) {
     unlist(tmpD[which.max(tmpD)])
 }
 
+##' @importFrom phylobase hasDuplicatedLabels
 findGroups <- function(tr, threshold=.015, experimental=FALSE, parallel=TRUE) {
 ### idea for optimization see if it makes a difference to supply the tree
 ### both in pre- and post-order when computing the distance to tip
   stopifnot(inherits(tr, "phylo4"))
-  stopifnot(!hasDuplicatedLabels(tr))
+  stopifnot(!phylobase::hasDuplicatedLabels(tr))
   if (! require(igraph)) {
       stop("Install the igraph package")
   }
