@@ -86,7 +86,7 @@ findGroups <- function(tr, threshold=.015, experimental=FALSE, parallel=TRUE) {
   }
   else {
       intNodes <- (nTips(tr)+1):(nEdges(tr))
-      if (parallel) {
+      if (parallel && require(foreach)) {
           lGrp <- foreach(i=intNodes, .final=unlist) %dopar% {
               distFromTip(tr, i)
           }
