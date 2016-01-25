@@ -15,6 +15,10 @@ copy_data <- function(from = "~/Documents/plankton-larvae-data",
                                         copy.date = TRUE))
 }
 
+copy_storr <- function(from = "") {
+    stop("implement me!")
+}
+
 copy_photos <- function(from = "~/hdd/plankton-images/app_photos",
                         to = "~/R-dev/flpk-shiny/www/app_photos",
                         testing = FALSE) {
@@ -53,6 +57,7 @@ deploy_app <- function(d, app_path = "~/R-dev/flpk-shiny",
 
     ## before deploying we need to copy the photo and the data to www
     copy_data()
+    copy_storr()
     copy_photos(testing = testing)
     analogsea::docklet_shinyapp(droplet = d, path = app_path,
                                 img = "fmichonneau/flpk-docker-image",

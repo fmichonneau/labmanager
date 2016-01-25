@@ -51,7 +51,7 @@ assign_esu <- function(path = "~/Documents/plankton-larvae-data/seqs") {
                            sep="_")
 
     tr <- as(tr, "phylo")
-    ape::write.tree(tr, file = "/tmp/test_tree.tr")
+    data_store()$set("esu_tree", tr)
 
     res
 }
