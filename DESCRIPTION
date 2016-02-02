@@ -3,7 +3,8 @@ Title: Manage barcoding data and more
 Version: 0.0.999
 Author: Francois Michonneau
 Maintainer: Francois Michonneau <francois.michonneau@gmail.com>
-Description: A Shiny LIMS (probably not very useful for other people at this stage).
+Description: A Shiny LIMS (probably not very useful for other people at this
+    stage).
 License: MIT + file LICENSE
 LazyData: true
 URL: https://github.com/fmichonneau/labmanager
@@ -23,4 +24,4 @@ Imports:
     storr
 Suggests:
     testthat (>= 0.11.0)
-RoxygenNote: 5.0.1
+RoxygenNote: 5.0.1.9000
