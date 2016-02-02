@@ -15,8 +15,27 @@ copy_data <- function(from = "~/Documents/plankton-larvae-data",
                                         copy.date = TRUE))
 }
 
-copy_storr <- function(from = "") {
-    stop("implement me!")
+copy_storr <- function(from = "~/Documents/plankton-larvae-data/data_storr",
+                       to = "~/R-dev/flpk-shiny/www/data_storr") {
+    if (!dir.exists(to)) {
+        message(sQuote(to), " doesn't exist... Creating it.")
+        dir.create(to)
+    }
+    to <- normalizePath(to)
+    from <- normalizePath(from)
+    lst_files <- list.files(path = from, full.names = TRUE, recursive = TRUE)
+    to_data <- gsub(from, to, lst_files)
+    res <- cbind(lst_files, to_data)
+
+    sapply(to_data, function(x) {
+        x <- dirname(x)
+        if (!dir.exists(x)) {
+            dir.create(x, recursive = TRUE)
+        }
+    })
+
+    apply(res, 1, function(x) file.copy(x[1], x[2], overwrite = TRUE,
+                                        copy.date = TRUE))
 }
 
 copy_photos <- function(from = "~/hdd/plankton-images/app_photos",
