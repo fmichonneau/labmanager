@@ -8,17 +8,19 @@
 ##' @param path path indicating where the COI sequences are stored.
 assign_esu <- function(path = "~/Documents/plankton-larvae-data/seqs",
                        ...) {
-    alg_dir <- tempdir()
 
-    message("Temporary directory for the alignment file: ", alg_dir)
+    lst_seq <- list.files(file.path(path, "COI"))
 
-    merg  <- chopper::mergeSeq(list.files(file.path(path, "COI")),
-                               output = alg_dir, markers = "COI", seqFolder = path,
-                               convertEnds = FALSE, checkAmbiguity = FALSE
-                               )
+    tmp_file <- tempfile()
 
-    ape_alg <- ape::read.dna(file = attr(merg, "aligned_file")[1], format = "fasta",
-                             as.matrix = TRUE)
+    ## to create an unique key, write all the sequences to a file and
+    ## generate its md5sum...
+    seqs <- lapply(lst_seq, function(x) readLines(file.path(path, "COI", x)))
+    cat(paste(unlist(seqs), collapse="\n"), file=tmp_file)
+    key <- tools::md5sum(tmp_file)[[1]]
+    seq_store$set(key, lst_seq)
+    ape_alg <- alg_store()$get(key)
+
     tr <- ape::nj(ape::dist.dna(ape_alg, model = "raw"))
 
     tr <- ape::root(tr, 1, resolve.root = TRUE)
@@ -112,4 +114,16 @@ get_esu <- function(ids, phylum) {
                     col.names = FALSE, append = TRUE)
     }
     esu_id
+}
+
+fetch_hook_alignment <- function(key, namespace) {
+    alg_dir <- tempdir()
+    merg  <- chopper::mergeSeq(seq_store$get(key),
+                               output = alg_dir, markers = "COI",
+                               seqFolder = "~/Documents/plankton-larvae-data/seqs",
+                               convertEnds = FALSE, checkAmbiguity = FALSE
+                               )
+    ape_alg <- ape::read.dna(file = attr(merg, "aligned_file")[1], format = "fasta",
+                             as.matrix = TRUE)
+    ape_alg
 }
