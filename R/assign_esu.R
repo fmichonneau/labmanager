@@ -10,6 +10,8 @@ assign_esu <- function(path = "~/Documents/plankton-larvae-data/seqs",
                        ...) {
     alg_dir <- tempdir()
 
+    message("Temporary directory for the alignment file: ", alg_dir)
+
     merg  <- chopper::mergeSeq(list.files(file.path(path, "COI")),
                                output = alg_dir, markers = "COI", seqFolder = path,
                                convertEnds = FALSE, checkAmbiguity = FALSE
