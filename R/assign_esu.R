@@ -30,19 +30,33 @@ assign_esu <- function(path = "~/Documents/plankton-larvae-data/seqs",
 
     grp_lst <- split(rownames(grp_data), grp_data$Groups)
 
-    esu_lst <- lapply(grp_lst, function(x) {
-        phy <- unique(get_phylum(x))
-        if (length(phy) > 1) {
-            stop("Something is wrong, members of a same group should be of the same phylum.\n",
-                 "Check: ", sQuote(paste(x, collapse = ", ")), "\n",
-                 "Phyla: ", sQuote(paste(get_phylum(x), collapse = ", "))
-                 )
-        }
+    grp_phylum <- lapply(grp_lst, function(x) get_phylum(x))
+
+    ## Make sure that all members of each group belongs to a single
+    ## phylum
+    is_not_unique_phylum <- vapply(grp_phylum, function(x) {
+        length(unique(x)) > 1
+    }, logical(1))
+
+    if (length(grp_phylum[is_not_unique_phylum])) {
+        msg <- mapply(
+            function(x, y) {
+            paste(
+                "  Samples: ", paste(x, collapse = ", "), "\n",
+                "  Phyla: ", paste(y, collapse = ", "), "\n\n"
+            )
+        }, grp_lst[is_not_unique_phylum], grp_phylum[is_not_unique_phylum])
+        stop("Members of the same group should be in the same phylum: \n",
+             msg, call. = FALSE)
+    }
+
+    ## Assemble data frame for the results
+    esu_lst <- mapply(function(x, phy) {
         cbind(voucher_number = x,
-              phylum = rep(phy, length(x)),
+              phylum = phy,
               group_esu = rep(get_esu(x, phy), length(x))
               )
-    })
+    }, grp_lst, grp_phylum)
 
     res <- do.call("rbind", esu_lst)
     res <- as.data.frame(res, stringsAsFactors = FALSE)
