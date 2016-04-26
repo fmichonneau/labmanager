@@ -61,10 +61,8 @@ assign_esu <- function(path = "~/Documents/plankton-larvae-data/seqs",
 
 
 get_phylum <- function(ids) {
-    res <- get_lab("sample_data") %>%
-        dplyr::filter(voucher_number %in% ids) %>%
-        dplyr::select(phylum) %>%
-        .[, 1]
+    res <- get_lab("sample_data")
+    res <- res[res$voucher_number %in% ids, "phylum", drop = TRUE]
     if (length(res) < 1)
         stop("missing phylum for ", sQuote(paste(ids, collapse = ", ")))
     else
