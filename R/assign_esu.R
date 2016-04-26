@@ -6,7 +6,8 @@
 ##' @import phylobase
 ##' @export
 ##' @param path path indicating where the COI sequences are stored.
-assign_esu <- function(path = "~/Documents/plankton-larvae-data/seqs") {
+assign_esu <- function(path = "~/Documents/plankton-larvae-data/seqs",
+                       ...) {
     alg_dir <- tempdir()
 
     merg  <- chopper::mergeSeq(list.files(file.path(path, "COI")),
@@ -22,7 +23,7 @@ assign_esu <- function(path = "~/Documents/plankton-larvae-data/seqs") {
     tr$edge.length[tr$edge.length < 0] <- 0
 
     tr <- as(tr, "phylo4")
-    grp <- findGroups(tr)
+    grp <- findGroups(tr, ...)
     grp_data <- tdata(grp, "tip")
 
     grp_lst <- split(rownames(grp_data), grp_data$Groups)
