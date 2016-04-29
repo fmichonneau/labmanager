@@ -1,7 +1,7 @@
 Package: labmanager
 Title: Manage barcoding data and more
 Version: 0.0.999
-Author: Francois Michonneau
+Author: Francois Michonneau, Anne Lott
 Maintainer: Francois Michonneau <francois.michonneau@gmail.com>
 Description: A Shiny LIMS (probably not very useful for other people at this
     stage).
