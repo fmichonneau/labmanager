@@ -1,7 +1,7 @@
 
 #This function outputs a table showing whether or not the sample has had a 
 #sequence extraction: 1 if it did, 0 if not
-has_seq_extract = function(phylum_listings, extraction_table){
+has_seq_extract <-  function(phylum_listings, extraction_table){
   phylum_listings %>%
     left_join(extraction_table) %>%
     group_by(voucher_number) %>%
@@ -41,7 +41,7 @@ has_seq_file <- function(seq_path, pcr_table) {
 
 #This function produces a table that lists whether or not each 
 #voucher was successful in being sequenced.
-seq_success = function(sequencing_plate_data, pcr_table){
+seq_success <-  function(sequencing_plate_data, pcr_table){
   seq_success_tbl <- sequencing_plate_data %>%
     left_join(pcr_table) %>%
     select(voucher_number, sequence_success = success)
@@ -49,7 +49,7 @@ seq_success = function(sequencing_plate_data, pcr_table){
 }
 
 #This function combines all the tables I create in functions above.
-sample_status = function(pcr_tbl = get_lab("pcr_sample_data"), 
+sample_status <- function(pcr_tbl = get_lab("pcr_sample_data"), 
                          ext_tbl = get_lab("extraction_data"),
                          phy_listings = get_lab("sample_data"), 
                          seq_plate_data = get_lab("sequencing_plate_data"),
