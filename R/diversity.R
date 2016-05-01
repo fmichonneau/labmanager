@@ -4,13 +4,14 @@ if (FALSE) {
     library(dplyr)
     library(ggplot2)
     library(wesanderson)
+    library(tidyr)
 
     ## histogram number of species per phylum
     dat <- get_lab("sample_esu") %>%
         dplyr::filter(phylum != "Metazoa") %>%
         dplyr::group_by(phylum) %>%
         dplyr::summarize(
-            n_esu = max(group_esu)
+            n_esu = n_distinct(group_esu)
         )
 
     dat$phylum <- reorder(dat$phylum, dat$n_esu, sort)
