@@ -16,7 +16,7 @@ if (FALSE) {
 
     dat$phylum <- reorder(dat$phylum, dat$n_esu, sort)
 
-    svg(file = "~/Documents/2016-01.NFMSS/diversity_histo.svg", height = 5)
+    svg(file = "~/Documents/2016-05-02.Whitney/diversity_histo.svg", height = 5)
     ggplot(dat, aes(x = phylum, y = n_esu)) +
         geom_bar(stat = "identity", fill = wes_palette("Zissou")[1]) +
         coord_flip() +
@@ -47,7 +47,7 @@ if (FALSE) {
 
     pal <- wes_palette("Zissou", 5)
 
-    svg(file = "~/Documents/2016-01.NFMSS/percent_identified.svg", height = 5)
+    svg(file = "~/Documents/2016-05-02.Whitney/percent_identified.svg", height = 5)
 
     ggplot(res, aes(x = phylum, y = n_species, fill = N)) +
         geom_bar(stat = "identity", position = "dodge") +
