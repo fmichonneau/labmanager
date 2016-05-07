@@ -18,45 +18,40 @@ voucher_num_present <- function(pcr_tbl= pcr_table,
   in_seq_plate <-  seq_plate_tbl$voucher_number %in% phylum_tbl$voucher_number
   if (!all(in_pcr)){
     not_in_pcr <- pcr_tbl$voucher_number[!in_pcr]
-    stop("Some vouchers in PCR data not in phylum listings:", not_in_pcr)
-  }else if (!all(in_ext)) {
+    warning("Some vouchers in PCR data not in phylum listings:", paste(not_in_pcr, collapse= ", "))
+  }
+  if (!all(in_ext)) {
     not_in_ext <-  ext_tbl$voucher_number[!in_ext]
-    stop("Some vouchers in extractions not in phylum listings:", not_in_ext)
-  }else if (!all(in_seq_plate)){
+    warning("Some vouchers in extractions not in phylum listings:", paste(not_in_ext, collapse= ", "))
+  }
+  if (!all(in_seq_plate)){
     not_in_seq_plate <-  in_seq_plate$voucher_number[!in_seq_plate]
-    stop("Some vouchers in sequencing plate data not in phylum listings:",
-           not_in_seq_plate)
+    warning("Some vouchers in sequencing plate data not in phylum listings:",
+           paste(not_in_seq_plate, collapse= ", "))
   }
 }
 voucher_num_present()
 
 #This function checks that there are no duplicate voucher numbers in the phylum listings.
 no_duplicates <- function(phylum_tbl = phylum_table){
-  duplicates = any(phylum_tbl$voucher_number != unique(phylum_tbl$voucher_number))
-  if (duplicates){
+  duplicates = phylum_tbl$voucher_number[duplicated(phylum_tbl$voucher_number)]
+  if (length(duplicates) > 0){
     stop("There are duplicate voucher numbers in the phylum listings", duplicates)
   }
 }
 no_duplicates() 
+
 
 #This function attempts to check that each combination of pcr_id and 
 #voucher_number in the sequencing plate data is also found in the 
 #PCR data. 
 comb_present = function(seq_plate_tbl = sequencing_plate_table,
                         pcr_tbl= pcr_table){
-  it = 0
-  comb_absent = c()
-  for (i in 1:length(seq_plate_tbl$voucher_number)) {
-    idv_voucher_num = seq_plate_tbl$voucher_number[i] 
-    idv_pcr_id = seq_plate_tbl$pcr_id[i]
-    if (idv_voucher_num %in% pcr_tbl & idv_pcr_id %in% pcr_tbl) {
-      it = it +1
-    } else {
-      comb_absent = c(comb_absent, c(" (",idv_voucher_num,", ", idv_pcr_id, ") "))
-    }
-  }
-  if (it == length(seq_plate_tbl$voucher_number)){
+  combs_seq_plate = paste(seq_plate_tbl$pcr_id, seq_plate_tbl$voucher_number)
+  combs_pcr_data = paste(pcr_tbl$pcr_id, pcr_tbl$voucher_number)
+  combs_not_present = setdiff(combs_seq_plate, combs_pcr_data)
+  if (length(combs_not_present) == 0){
     stop("Every combination present.")
-  } else{stop("Not every combination present:", comb_absent)}
+  } else{stop("Not every combination present:", combs_not_present)}
 }
 comb_present()
