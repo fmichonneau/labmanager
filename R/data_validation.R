@@ -1,18 +1,11 @@
-pcr_table <- read.csv(file = "R/CopyOfdata/pcr_data.csv", 
-                      stringsAsFactors = FALSE)
-phylum_table <- read.csv("R/CopyOfdata/phylum_listings.csv", 
-                         stringsAsFactors= FALSE)
-extraction_table <- read.csv(file = "R/CopyOfdata/extraction_data.csv",
-                             stringsAsFactors = FALSE)
-sequencing_plate_table <- read.csv(file = "R/CopyOfdata/sequencing_plate_data.csv",
-                                   stringsAsFactors = FALSE)
+
 
 #This function checks if the voucher numbers in the PCR data, extraction data
 # and the sequencing plate data are in the phylum listings.
-voucher_num_present <- function(pcr_tbl= pcr_table,
-                                phylum_tbl= phylum_table, 
-                                ext_tbl = extraction_table, 
-                                seq_plate_tbl= sequencing_plate_table){
+voucher_num_present <- function(pcr_tbl= get_lab("pcr_sample_data"),
+                                phylum_tbl= get_lab("sample_data"), 
+                                ext_tbl = get_lab("extraction_data"), 
+                                seq_plate_tbl= get_lab("sequencing_plate_data")){
   in_pcr <-  pcr_tbl$voucher_number %in% phylum_tbl$voucher_number
   in_ext <-  ext_tbl$voucher_number %in% phylum_tbl$voucher_number
   in_seq_plate <-  seq_plate_tbl$voucher_number %in% phylum_tbl$voucher_number
@@ -30,28 +23,27 @@ voucher_num_present <- function(pcr_tbl= pcr_table,
            paste(not_in_seq_plate, collapse= ", "))
   }
 }
-voucher_num_present()
+
 
 #This function checks that there are no duplicate voucher numbers in the phylum listings.
-no_duplicates <- function(phylum_tbl = phylum_table){
-  duplicates = phylum_tbl$voucher_number[duplicated(phylum_tbl$voucher_number)]
+no_duplicates <- function(phylum_tbl = "sample_data"){
+  duplicates <-  phylum_tbl$voucher_number[duplicated(phylum_tbl$voucher_number)]
   if (length(duplicates) > 0){
     stop("There are duplicate voucher numbers in the phylum listings", duplicates)
   }
 }
-no_duplicates() 
+
 
 
 #This function attempts to check that each combination of pcr_id and 
 #voucher_number in the sequencing plate data is also found in the 
 #PCR data. 
-comb_present = function(seq_plate_tbl = sequencing_plate_table,
-                        pcr_tbl= pcr_table){
-  combs_seq_plate = paste(seq_plate_tbl$pcr_id, seq_plate_tbl$voucher_number)
-  combs_pcr_data = paste(pcr_tbl$pcr_id, pcr_tbl$voucher_number)
-  combs_not_present = setdiff(combs_seq_plate, combs_pcr_data)
+comb_present <- function(seq_plate_tbl = get_lab("sequencing_plate_data"),
+                        pcr_tbl= get_lab("pcr_sample_data")){
+  combs_seq_plate <-  paste(seq_plate_tbl$pcr_id, seq_plate_tbl$voucher_number)
+  combs_pcr_data <-  paste(pcr_tbl$pcr_id, pcr_tbl$voucher_number)
+  combs_not_present <-  setdiff(combs_seq_plate, combs_pcr_data)
   if (length(combs_not_present) == 0){
     stop("Every combination present.")
   } else{stop("Not every combination present:", combs_not_present)}
 }
-comb_present()
