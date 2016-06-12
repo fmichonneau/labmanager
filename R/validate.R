@@ -5,7 +5,8 @@ validate_lab <- function(what, res) {
                      function(x) {
             with_spaces <- sapply(res[[x]], nchar)
             no_spaces <- sapply(res[[x]], function(i) nchar(gsub("\\s", "", i)))
-            if (any(with_spaces != no_spaces)) stop("there are spaces in the taxa names of ", what)
+            if (any(na.omit(with_spaces) != na.omit(no_spaces)))
+                stop("there are spaces in the taxa names of ", what)
         })
     }
 }
