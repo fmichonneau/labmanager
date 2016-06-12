@@ -40,8 +40,8 @@ compare_field_bold_ids <- function(field_ids = get_lab("sample_data"),
                                    bold_ids = get_lab("sequencing_plate_data")) {
 
     both <- dplyr::left_join(field_ids, bold_ids, by = "voucher_number") %>%
-        dplyr::filter_('success' == 1) %>%
+        dplyr::filter(success == 1) %>%
         dplyr::select_('voucher_number', 'phylum', 'bold_phylum_id') %>%
-        dplyr::filter_('phylum' != 'bold_phylum_id')
+        dplyr::filter(phylum != bold_phylum_id)
     both
 }

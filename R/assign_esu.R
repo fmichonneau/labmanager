@@ -56,7 +56,7 @@ assign_esu <- function(path = "~/Documents/plankton-larvae-data/seqs",
     esu_lst <- mapply(function(x, phy) {
         cbind(voucher_number = x,
               phylum = phy,
-              group_esu = rep(get_esu(x, unique(phy)), length(x))
+              group_esu = rep(get_esu(x, phy), length(x))
               )
     }, grp_lst, grp_phylum)
 
@@ -78,87 +78,43 @@ assign_esu <- function(path = "~/Documents/plankton-larvae-data/seqs",
 
 get_phylum <- function(ids) {
     res <- get_lab("sample_data")
-    res <- res[res$voucher_number %in% ids, "phylum", drop = TRUE]
+    res <- res[match(ids, res$voucher_number), "phylum", drop = TRUE]
+
     if (length(res) < 1)
         stop("missing phylum for ", sQuote(paste(ids, collapse = ", ")))
     else
         res
 }
 
-
 get_esu <- function(ids, phylum) {
     tt <- get_lab("sample_esu") %>%
-        dplyr::filter(voucher_number %in% ids)
+        dplyr::filter(voucher_number %in% ids) %>%
+        dplyr::select(group_esu) %>%
+        .[, 1]
 
-    if (nrow(tt) > 0) {
-        ## If at least some of these IDs already have an ESU, let's
-        ## make sure they have the same phylum.
-        curr_phy <- unique(tt[["phylum"]])
+    if (length(tt) > 0) {
+        esu_id <- unique(tt)
+        if (length(esu_id) > 1) stop("Already assigned ESU with length greater than 1")
+    } else {
+        smpl_esu <- get_lab("sample_esu")
+        esu_id <- smpl_esu[smpl_esu[["phylum"]] == phylum, "group_esu"]
 
-        ## There shouldn't be more than one active phylum for a set of
-        ## ids in an ESU.
-        if (length(curr_phy) > 1) {
-            stop("Problem: there shouldn't be more than one phylum for a ",
-                 "set of ids in an ESU.", call. = FALSE)
-        }
-
-        ## If the phylum isn't the same as the one listed in the database,
-        ## we need to replace it, get a new ESU id, and update the database.
-        if (curr_phy != phylum) {
-            warning("For ", paste0(ids, collapse = ", "), ", ",
-                    "phylum in the database: ", curr_phy, ", ",
-                    "replaced with: ", phylum, ".", call. = FALSE)
-            esu_id <- assign_new_esu_id(phylum)
-            tt <- get_lab("sample_esu")
-            tt[tt$"voucher_number" %in% ids, "phylum"] <- phylum
-            tt[tt$"voucher_number" %in% ids, "group_esu"] <- esu_id
-            write_esu_database(tt, append = FALSE)
-            ids_to_add <- setdiff(ids, tt[["voucher_number"]])
-            append_esu_id(ids_to_add, phylum, esu_id)
+        if (length(esu_id) == 0) {
+            esu_id <- 1
         } else {
-            ## otherwise, we need to add the vouchers that are not yet
-            ## in the database
-            esu_id <- unique(tt[["group_esu"]])
-            if (length(esu_id) > 1) stop("This should be unique.")
-            ids_to_add <- setdiff(ids, tt[["voucher_number"]])
-            append_esu_id(ids_to_add, phylum, esu_id)
+            esu_id <- max(esu_id) + 1
         }
 
-    } else {
-        ## If it's brand new, just create a new ESU for the phylum
-        esu_id <- assign_new_esu_id(phylum)
-        append_esu_id(ids, phylum, esu_id)
-    }
-
-    esu_id
-}
-
-assign_new_esu_id <- function(phylum) {
-    smpl_esu <- get_lab("sample_esu")
-    esu_id <- smpl_esu[smpl_esu[["phylum"]] == phylum, "group_esu"]
-
-    if (length(esu_id) == 0) {
-        esu_id <- 1
-    } else {
-        esu_id <- max(esu_id) + 1
+        uu <- data.frame(
+            voucher_number = ids,
+            phylum = rep(phylum, length(ids)),
+            group_esu = rep(esu_id, length(ids))
+        )
+        write.table(uu, file = "~/Documents/plankton-larvae-data/sample_esu.csv",
+                    sep = ",", dec = ".", qmethod = "double", row.names = FALSE,
+                    col.names = FALSE, append = TRUE)
     }
     esu_id
-}
-
-append_esu_id <- function(ids, phylum, esu_id) {
-    uu <- data.frame(
-        voucher_number = ids,
-        phylum = rep(phylum, length(ids)),
-        group_esu = rep(esu_id, length(ids))
-    )
-    write_esu_database(uu, append = TRUE)
-}
-
-
-write_esu_database <- function(db, file = "~/Documents/plankton-larvae-data/sample_esu.csv", append) {
-    write.table(db, file = file, sep = ",", dec = ".",
-                qmethod = "double", row.names = FALSE,
-                col.names = !append, append = append)
 }
 
 fetch_hook_alignment <- function(key, namespace) {

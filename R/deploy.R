@@ -41,6 +41,8 @@ copy_storr <- function(from = "~/Documents/plankton-larvae-data/data_storr",
 copy_photos <- function(from = "~/hdd/plankton-images/app_photos",
                         to = "~/R-dev/flpk-shiny/www/app_photos",
                         testing = FALSE) {
+
+    ## use rsync to copy the photos to not do it everytime
     if (!dir.exists(to)) {
         message(sQuote(to), " doesn't exist... Creating it.")
         dir.create(to)
@@ -78,8 +80,9 @@ deploy_app <- function(d, app_path = "~/R-dev/flpk-shiny",
     copy_data()
     copy_storr()
     copy_photos(testing = testing)
-    analogsea::docklet_shinyapp(droplet = d, path = app_path,
-                                img = "fmichonneau/flpk-docker-image",
-                                ...)
+    ## use rsync to only copy
+    #analogsea::docklet_shinyapp(droplet = d, path = app_path,
+    #                            img = "fmichonneau/flpk-docker-image",
+    #                            ...)
 
 }

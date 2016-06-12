@@ -10,3 +10,14 @@ validate_lab <- function(what, res) {
         })
     }
 }
+
+
+check_voucher_extractions <- function(ext = get_lab("extraction_data"),
+                                      samp = get_lab("sample_data")) {
+    miss_samp <- ext$voucher_number %in% samp$voucher_number
+    if (!all(miss_samp)) {
+        miss <- ext$voucher_number[!miss_samp]
+        stop("Some voucher in extractions are not in sample_data: ",
+             miss)
+    }
+}

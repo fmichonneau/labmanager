@@ -63,11 +63,14 @@ if (FALSE) {
     res <- bind_rows(total, annel, mollu, arth)
 
 
-    pdf(file = "/tmp/accumulation.pdf")
+    svg(file = "/tmp/accumulation.svg", height = 5)
     ggplot(res,
            aes(x = first_seen, y = cum_sum, colour = phylum)) + geom_line() +
         xlab("Date") + ylab("Cumulative number of species sampled") +
-        scale_x_date(date_labels = "%Y-%m-%d")
+        scale_x_date(date_labels = "%Y-%m-%d") +
+        theme(axis.text.y = element_text(size = 12),
+              legend.text = element_text(size = 12),
+              axis.title = element_text(size = 12))
     dev.off()
 
     ggplot(n_esu_per_collecting_event(phylum = "Annelida"),
