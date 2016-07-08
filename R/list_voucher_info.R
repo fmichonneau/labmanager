@@ -1,16 +1,7 @@
-extraction_table <- read.csv(file = "CopyOfdata/extraction_data.csv", 
-                      stringsAsFactors = FALSE)
-pcr_table <- read.csv(file = "CopyOfdata/pcr_data.csv", 
-                      stringsAsFactors = FALSE)
-phylum_listings <- read.csv(file = "CopyOfdata/phylum_listings.csv", 
-                      stringsAsFactors = FALSE)
-sequencing_plate_data <- read.csv(file = "CopyOfdata/sequencing_plate_data.csv",
-                                  stringsAsFactors = FALSE)
-
-get_voucher_info <- function(voucher, extraction_data = extraction_table,
-                             pcr_sample_data = pcr_table,
-                             sample_data = phylum_listings,
-                             seq_path = seq_path){
+get_voucher_info <- function(voucher, extraction_data = get_lab("extraction_data"),
+                             pcr_sample_data = get_lab("pcr_sample_data"),
+                             sample_data = get_lab("sample_data"),
+                             seq_path){
   
   data_row = sample_data[sample_data[,"voucher_number"]== voucher,]
   
