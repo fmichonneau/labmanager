@@ -22,7 +22,7 @@ align_by_phyla <- function(seq_path = "~/Documents/plankton-larvae-data/seqs/COI
     seqs_phyla <- lapply(split_phyla, function(phyla_) {
         intersect(seqs, phyla_[["voucher_number"]])
     })
-    stopifnot(length(unlist(seqs_phyla)) == length(seqs))
+
     seqs_phyla <- seqs_phyla[sapply(seqs_phyla, length) > 0]
 
     sapply(seq_along(seqs_phyla), function(x)
