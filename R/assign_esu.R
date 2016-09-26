@@ -87,6 +87,9 @@ get_phylum <- function(ids) {
 }
 
 get_esu <- function(ids, phylum) {
+    if (is.null(ids))
+        stop("ids is NULL")
+
     tt <- get_lab("sample_esu") %>%
         dplyr::filter(voucher_number %in% ids) %>%
         dplyr::select(group_esu) %>%
