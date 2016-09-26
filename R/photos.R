@@ -150,3 +150,37 @@ rename_photos <- function(app_folder = "/home/francois/hdd/plankton-images/app_p
     }
     invisible(renm)
 }
+
+
+get_photo_files <- function(voucher_number, app_folder, quality = c("large", "thumbs")) {
+    quality <- match.arg(quality)
+    list.files(path = file.path(app_folder, voucher_number, quality),
+               full.names = TRUE)
+}
+
+get_photos_phylum <- function(phylum, app_folder = "/home/francois/hdd/plankton-images/app_photos",
+                              sample_esu = get_lab("sample_esu"),
+                              dest_folder = file.path("/tmp", phylum, "photos")) {
+    check_phylum(phylum)
+
+    ## we use `sample_esu` because we want (1) the photos sorted by
+    ## ESU, (2) the same voucher numbers as for `get_sequences_by_phylum()`
+    phylum_vchr <- get_voucher_numbers_by_phylum(phylum, sample_esu)
+
+    photos <- lapply(phylum_vchr, function(vchr) {
+        vchr <- phylum_vchr[[1]]
+        res <- lapply(vchr, get_photo_files, app_folder)
+        esus <- get_esu_by_voucher_number(vchr)
+        res <- mapply(function(f, esu) {
+            data.frame(orig = f,
+                       dest = file.path(dest_folder, esu, basename(f)),
+                       stringsAsFactors = FALSE)
+        }, res, esus, SIMPLIFY = FALSE)
+        res <- dplyr::bind_rows(res)
+        sapply(unique(dirname(res$dest)), dir.create, recursive = TRUE, showWarnings = FALSE)
+        apply(res, 1, function(x) file.copy(x[1], x[2]))
+        res
+    })
+    photos
+
+}
