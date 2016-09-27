@@ -204,7 +204,8 @@ generate_icbr_template <- function(plate_id, primer,
 
 success_summary <- function(pcr_id, samples = get_lab("sample_data"),
                             pcr_samples = get_lab("pcr_sample_data")) {
-    tmp_pcr <- pcr_samples[pcr_id %in% pcr_samples[["pcr_id"]],  ]
+
+    tmp_pcr <- pcr_samples[pcr_samples[["pcr_id"]] %in% pcr_id,  ]
     tmp_pcr <- dplyr::left_join(tmp_pcr, samples, by = "voucher_number")
     xtabs(~ pcr_success + phylum, tmp_pcr)
 }
