@@ -35,7 +35,7 @@ assign_esu <- function(path = "~/Documents/plankton-larvae-data/seqs/COI",
 
     grp_phylum <- lapply(grp_lst, function(x) get_phylum(x))
 
-    ## Make sure that all members of each group belongs to a single
+    ## Make sure that all members of each group belong to a single
     ## phylum
     is_not_unique_phylum <- vapply(grp_phylum, function(x) {
         length(unique(x)) > 1
@@ -46,7 +46,7 @@ assign_esu <- function(path = "~/Documents/plankton-larvae-data/seqs/COI",
             function(x, y) {
             paste(
                 "  Samples: ", paste(x, collapse = ", "), "\n",
-                "  Phyla: ", paste(y, collapse = ", "), "\n\n"
+                "   Phyla: ", paste(y, collapse = ", "), "\n\n"
             )
         }, grp_lst[is_not_unique_phylum], grp_phylum[is_not_unique_phylum])
         stop("Members of the same group should be in the same phylum: \n",
@@ -55,6 +55,8 @@ assign_esu <- function(path = "~/Documents/plankton-larvae-data/seqs/COI",
 
     ## Assemble data frame for the results
     esu_lst <- mapply(function(x, phy) {
+        if (!identical(length(x), length(phy)))
+            stop("problem: more than one phylum specified: ", paste(phy, collapse = ", "))
         cbind(voucher_number = x,
               phylum = phy,
               group_esu = rep(get_esu(x, phy), length(x))
@@ -90,15 +92,29 @@ get_phylum <- function(ids) {
 get_esu <- function(ids, phylum) {
     if (is.null(ids))
         stop("ids is NULL")
+    sample_esu <- get_lab("sample_esu")
 
-    tt <- get_lab("sample_esu") %>%
+    if (length(unique(phylum)) > 1)
+        stop("duplicated phylum")
+
+    phylum <- unique(phylum)
+
+    tt <- sample_esu %>%
         dplyr::filter(voucher_number %in% ids) %>%
         dplyr::select(group_esu) %>%
         .[, 1]
 
     if (length(tt) > 0) {
         esu_id <- unique(tt)
-        if (length(esu_id) > 1) stop("Already assigned ESU with length greater than 1")
+        if (length(esu_id) > 1) {stop("Already assigned ESU with length greater than 1")}
+        to_add <- ids[! ids %in% sample_esu$voucher_number]
+        if (length(to_add) > 0)
+            uu <- data.frame(
+                voucher_number = to_add,
+                phylum = rep(unique(phylum), length(to_add)),
+                group_esu = rep(esu_id, length(to_add))
+            )
+        else return(esu_id)
     } else {
         smpl_esu <- get_lab("sample_esu")
         esu_id <- smpl_esu[smpl_esu[["phylum"]] == phylum, "group_esu"]
@@ -114,10 +130,10 @@ get_esu <- function(ids, phylum) {
             phylum = rep(phylum, length(ids)),
             group_esu = rep(esu_id, length(ids))
         )
-        write.table(uu, file = "~/Documents/plankton-larvae-data/sample_esu.csv",
+    }
+    write.table(uu, file = "~/Documents/plankton-larvae-data/sample_esu.csv",
                     sep = ",", dec = ".", qmethod = "double", row.names = FALSE,
                     col.names = FALSE, append = TRUE)
-    }
     esu_id
 }
 
