@@ -5,17 +5,17 @@
 ##' @importFrom phylobase tipLabels
 ##' @import phylobase
 ##' @export
-##' @param path path indicating where the COI sequences are stored.
-assign_esu <- function(path = "~/Documents/plankton-larvae-data/seqs",
+##' @param path path indicating where the COI sequences are stored
+assign_esu <- function(path = "~/Documents/plankton-larvae-data/seqs/COI",
                        ...) {
 
-    lst_seq <- list.files(file.path(path, "COI"))
+    lst_seq <- list_sequences(seq_path = path)
 
     tmp_file <- tempfile()
 
     ## to create an unique key, write all the sequences to a file and
     ## generate its md5sum...
-    seqs <- lapply(lst_seq, function(x) readLines(file.path(path, "COI", x)))
+    seqs <- lapply(lst_seq, function(x) readLines(file.path(path,  x)))
     cat(paste(unlist(seqs), collapse="\n"), file=tmp_file)
     key <- tools::md5sum(tmp_file)[[1]]
     seq_store$set(key, lst_seq)
