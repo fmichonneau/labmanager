@@ -1,4 +1,8 @@
 
+list_sequences <- function(pattern = NULL, seq_path = "~/Documents/plankton-larvae-data/seqs/COI/") {
+    list.files(path = seq_path, pattern = pattern)
+}
+
 read_seq <- function(x, seq_path) {
     ff <- file.path(seq_path, x)
     if (! file.exists(ff))
