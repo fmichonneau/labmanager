@@ -40,7 +40,7 @@ get_sequences_by_phylum <- function(phylum, sample_esu = get_lab("sample_esu"),
 }
 
 fetch_hook_bold_seq_id <- function(key, namespace) {
-    stopifnot(!missing(namespace))
+    stopifnot(namespace != "objects")
     seq_path <- "~/Documents/plankton-larvae-data/seqs/COI/"
     message("Looking for ",  key, " in the ", namespace, " BOLD database")
     seq <- read_seq(key, seq_path)$sequence
