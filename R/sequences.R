@@ -63,20 +63,27 @@ update_bold_seq_id_store <- function() {
     invisible(out)
 }
 
-summary_bold_store <- function(max_records = 3, cutoff = 0.8) {
+##' @export
+summary_bold_store <- function(cutoff = 0.8) {
     all_seqs <- list_sequences()
     res <- lapply(all_seqs, function(x) {
-        id_cox1 <- store_bold_seq_id()$get(x, namespace = "COX1")
-        id_cox1_sp <- store_bold_seq_id()$get(x, namespace = "COX1_SPECIES")
-        r <- dplyr::bind_rows(COX1 = id_cox1, COX1_SPECIES = id_cox1_sp, .id = "db")
-        if (nrow(r) == 0) return(NULL)
+        bold <- lapply(store_bold_seq_id()$list_namespaces(), function(k) {
+            store_bold_seq_id()$get(x, namespace = k)
+        })
+        bold_is_null <- vapply(bold, is.null, logical(1))
+        if (all(bold_is_null)) return(NULL)
+        if (any(bold_is_null)) {stop("NULL values will trigger dplyr bug #2056") }
+        names(bold) <- store_bold_seq_id()$list_namespaces()
+        r <- dplyr::bind_rows(bold, .id = "db")
 
         dplyr::filter(r, similarity >= cutoff) %>%
-            dplyr::top_n(max_records, similarity) %>%
             select_("db", "ID", "taxonomicidentification",
                     "similarity", "specimen_country", "specimen_lat",
                     "specimen_lon")
     })
-    names(res) <- all_seqs
+    ## work around dplyr bug #2056
+    res_is_null <- vapply(res, is.null, logical(1))
+    res <- res[!res_is_null]
+    names(res) <- all_seqs[!res_is_null]
     dplyr::bind_rows(res, .id = "sequences")
 }
