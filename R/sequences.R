@@ -55,6 +55,7 @@ store_bold_seq_id <- function(store_path = "~/Documents/plankton-larvae-data/bol
 
 update_bold_seq_id_store <- function(seq_path = "~/Documents/plankton-larvae-data/seqs/COI") {
     all_seqs <- list.files(path = seq_path)
+    all_seqs <- list_sequences()
     out <- lapply(all_seqs, function(x) {
         store_bold_seq_id()$get(x, namespace = "COX1")
         store_bold_seq_id()$get(x, namespace = "COX1_SPECIES")
