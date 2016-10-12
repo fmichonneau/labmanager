@@ -53,12 +53,13 @@ store_bold_seq_id <- function(store_path = "~/Documents/plankton-larvae-data/bol
                           fetch_hook_bold_seq_id)
 }
 
-update_bold_seq_id_store <- function(seq_path = "~/Documents/plankton-larvae-data/seqs/COI") {
-    all_seqs <- list.files(path = seq_path)
+update_bold_seq_id_store <- function() {
     all_seqs <- list_sequences()
     out <- lapply(all_seqs, function(x) {
         store_bold_seq_id()$get(x, namespace = "COX1")
         store_bold_seq_id()$get(x, namespace = "COX1_SPECIES")
+        store_bold_seq_id()$get(x, namespace = "COX1_SPECIES_PUBLIC")
     })
     invisible(out)
 }
+
