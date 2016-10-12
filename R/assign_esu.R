@@ -125,7 +125,7 @@ fetch_hook_alignment <- function(key, namespace) {
     merg  <- chopper::mergeSeq(seq_store$get(key),
                                output = alg_dir, markers = "COI",
                                seqFolder = "~/Documents/plankton-larvae-data/seqs",
-                               convertEnds = FALSE, checkAmbiguity = FALSE
+                               checkAmbiguity = FALSE
                                )
     ape_alg <- ape::read.dna(file = attr(merg, "aligned_file")[1], format = "fasta",
                              as.matrix = TRUE)
