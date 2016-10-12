@@ -1,4 +1,4 @@
-
+##' @export
 list_sequences <- function(pattern = NULL, seq_path = "~/Documents/plankton-larvae-data/seqs/COI/") {
     list.files(path = seq_path, pattern = pattern)
 }

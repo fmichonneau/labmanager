@@ -6,6 +6,7 @@
 ##' @import phylobase
 ##' @export
 ##' @param path path indicating where the COI sequences are stored
+##' @param ... additional arguments to pass to \code{findGroups}
 assign_esu <- function(path = "~/Documents/plankton-larvae-data/seqs/COI",
                        ...) {
 
@@ -75,7 +76,7 @@ assign_esu <- function(path = "~/Documents/plankton-larvae-data/seqs/COI",
     res
 }
 
-
+##' @export
 get_phylum <- function(ids) {
     res <- get_lab("sample_data")
     res <- res[match(ids, res$voucher_number), "phylum", drop = TRUE]

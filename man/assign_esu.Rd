@@ -4,7 +4,7 @@
 \alias{assign_esu}
 \title{Assign/create ESUs based on the sequences}
 \usage{
-assign_esu(path = "~/Documents/plankton-larvae-data/seqs")
+assign_esu(path = "~/Documents/plankton-larvae-data/seqs", ...)
 }
 \arguments{
 \item{path}{path indicating where the COI sequences are stored.}
