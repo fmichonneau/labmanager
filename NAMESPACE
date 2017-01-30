@@ -2,6 +2,7 @@
 
 export(assign_esu)
 export(generate_folder_structure)
+export(generate_oligo_files)
 export(generate_thumbnails)
 export(get_esu_by_voucher_number)
 export(get_lab)
