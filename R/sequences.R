@@ -13,13 +13,24 @@ read_seq <- function(x, seq_path) {
                sequence = res[2], stringsAsFactors = FALSE)
 }
 
+prepare_fasta <- function(title, sequence) {
+    paste0(">", title, "\n",
+           sequence)
+}
+
+write_fasta <- function(res, file, verbose = FALSE, ...) {
+    cat(unlist(res), sep = "\n", file = file, ...)
+    if (verbose) message("Writing FASTA file to: ", file)
+    file
+}
+
 get_sequences_by_phylum <- function(phylum, sample_esu = get_lab("sample_esu"),
                                     seq_path = "~/Documents/plankton-larvae-data/seqs/COI/",
                                     fasta_file = NULL) {
     check_phylum(phylum, sample_esu)
+    validate_sequences(seq_path)
 
     phylum_vchr <- get_voucher_numbers_by_phylum(phylum, sample_esu)
-
     seqs <- lapply(phylum_vchr, function(vchr) {
         res <- lapply(vchr, read_seq, seq_path)
         res <- dplyr::bind_rows(res)
