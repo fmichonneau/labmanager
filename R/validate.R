@@ -21,3 +21,13 @@ check_voucher_extractions <- function(ext = get_lab("extraction_data"),
              miss)
     }
 }
+
+validate_sequences <- function(seq_path = "~/Documents/plankton-larvae-data/seqs/COI") {
+    ## let's make sure that the names of the sequences match the file names
+    seqs <- list_sequences(seq_path = seq_path)
+    res <- lapply(seqs, read_seq, seq_path) %>% dplyr::bind_rows()
+    if (!all(seqs == res$voucher_number)) {
+        stop("Sequence names don't match file names for files: ",
+             paste(seqs[seqs != res$voucher_number]))
+    }
+}
