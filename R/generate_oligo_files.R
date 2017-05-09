@@ -26,6 +26,7 @@ generate_oligo_files <- function(run = "BCS-003",
     if (identical("leray", primers))
         primers <- c("GGWACWGGWTGAACWGTWTAYCCYCC",
                      "TANACYTCNGGRTGNCCRAARAAYCA")
+    else stop("unknown primers")
 
     d <- split(d, d$lib_index_name)
     lapply(seq_len(length(d)), function(i) {
